@@ -1,8 +1,14 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { RouteResultData } from "./RouteForm";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { routeService } from "@/services/api";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface RouteResultProps {
   route: RouteResultData;
@@ -10,12 +16,73 @@ interface RouteResultProps {
 }
 
 export const RouteResult = ({ route, onReset }: RouteResultProps) => {
+  const [routeName, setRouteName] = useState(route.name);
+  const [isSaving, setIsSaving] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSaveRoute = async () => {
+    const { data: session } = await supabase.auth.getSession();
+    
+    if (!session.session) {
+      toast.error("Please sign in to save routes");
+      navigate("/auth");
+      return;
+    }
+    
+    setIsSaving(true);
+    
+    try {
+      await routeService.saveRoute(route, session.session.user.id, routeName);
+      toast.success("Route saved successfully!");
+      
+      // Ask if they want to view their routes
+      setTimeout(() => {
+        const goToDashboard = window.confirm("Route saved! Would you like to view your saved routes?");
+        if (goToDashboard) {
+          navigate("/dashboard");
+        }
+      }, 500);
+    } catch (error) {
+      console.error("Error saving route:", error);
+      toast.error("Failed to save route");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
       <div className="gradient-bg px-6 py-8 text-white">
-        <h2 className="text-2xl md:text-3xl font-bold">{route.name}</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl md:text-3xl font-bold">{route.name}</h2>
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="flex items-center gap-1"
+            onClick={handleSaveRoute}
+            disabled={isSaving}
+          >
+            <Save size={16} />
+            {isSaving ? "Saving..." : "Save Route"}
+          </Button>
+        </div>
         <p className="text-white/80 mt-2">Here's your personalized running route!</p>
+      </div>
+      
+      {/* Save form (when saving) */}
+      <div className="px-6 pt-4">
+        <div className="mb-4">
+          <label className="text-sm font-medium text-gray-700 mb-1 block">
+            Route Name:
+          </label>
+          <Input
+            value={routeName}
+            onChange={(e) => setRouteName(e.target.value)}
+            placeholder="Enter a name for this route"
+            className="w-full"
+          />
+        </div>
       </div>
       
       {/* Route details */}
