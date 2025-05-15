@@ -9,7 +9,101 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      saved_routes: {
+        Row: {
+          created_at: string
+          distance: number
+          estimated_time: string
+          id: string
+          is_favorite: boolean | null
+          name: string
+          preference: string | null
+          route_tip: string | null
+          start_location: string
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          distance: number
+          estimated_time: string
+          id?: string
+          is_favorite?: boolean | null
+          name: string
+          preference?: string | null
+          route_tip?: string | null
+          start_location: string
+          summary: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          distance?: number
+          estimated_time?: string
+          id?: string
+          is_favorite?: boolean | null
+          name?: string
+          preference?: string | null
+          route_tip?: string | null
+          start_location?: string
+          summary?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      shared_routes: {
+        Row: {
+          created_at: string
+          id: string
+          is_public: boolean | null
+          route_id: string | null
+          shared_by: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_public?: boolean | null
+          route_id?: string | null
+          shared_by: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_public?: boolean | null
+          route_id?: string | null
+          shared_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_routes_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "saved_routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
