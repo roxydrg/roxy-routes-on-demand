@@ -131,21 +131,23 @@ export const RouteMap = ({ route }: RouteMapProps) => {
   return (
     <div className="mt-4 rounded-lg overflow-hidden border border-gray-200 shadow-md">
       <div ref={mapRef} className="h-[400px] w-full" />
-      <style jsx global>{`
-        .start-marker {
-          font-size: 25px;
-          text-align: center;
-        }
-        .distance-marker {
-          background-color: rgba(255, 255, 255, 0.8);
-          border-radius: 4px;
-          padding: 2px;
-          font-size: 12px;
-          font-weight: bold;
-          text-align: center;
-          border: 2px solid #ff69b4;
-        }
-      `}</style>
+      <style>
+        {`
+          .start-marker {
+            font-size: 25px;
+            text-align: center;
+          }
+          .distance-marker {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            padding: 2px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid #ff69b4;
+          }
+        `}
+      </style>
     </div>
   );
 };
