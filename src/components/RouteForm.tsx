@@ -72,13 +72,15 @@ export const RouteForm = () => {
     // Call API
     setIsLoading(true);
     toast.info("Generating your perfect route...");
+    console.log("Submitting form data:", formData);
     
     try {
       const generatedRoute = await routeService.generateRoute(formData);
+      console.log("Generated route:", generatedRoute);
       setRouteResult(generatedRoute);
     } catch (error) {
+      console.error("Error generating route:", error);
       toast.error("Failed to generate route. Please try again.");
-      console.error(error);
     } finally {
       setIsLoading(false);
     }
