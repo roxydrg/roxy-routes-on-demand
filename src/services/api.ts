@@ -23,12 +23,12 @@ export const routeService = {
         .insert([{
           name,
           user_id: userId,
-          start_location: routeData.startLocation,
+          start_location: routeData.start,
           summary: routeData.summary,
           distance: routeData.distance,
-          estimated_time: routeData.estimatedTime,
-          route_tip: routeData.routeTip || null,
-          preference: routeData.preference || null,
+          estimated_time: routeData.time,
+          route_tip: routeData.tip || null,
+          preference: null, // This can be updated based on the form data if needed
         }]);
       
       if (error) throw error;
