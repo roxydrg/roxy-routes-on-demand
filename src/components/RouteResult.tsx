@@ -9,6 +9,7 @@ import { routeService } from "@/services/api";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { RouteMap } from "./RouteMap";
 
 interface RouteResultProps {
   route: RouteResultData;
@@ -83,6 +84,11 @@ export const RouteResult = ({ route, onReset }: RouteResultProps) => {
             className="w-full"
           />
         </div>
+      </div>
+      
+      {/* Route map */}
+      <div className="px-6">
+        <RouteMap route={route} />
       </div>
       
       {/* Route details */}
