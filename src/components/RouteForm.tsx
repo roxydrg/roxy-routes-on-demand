@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { RouteResult } from "./RouteResult";
+import { routeService } from "../services/api";
 
 const ROUTE_PREFERENCES = [
   { value: "loop", label: "Loop (Start & End at Same Point)" },
@@ -14,33 +15,6 @@ const ROUTE_PREFERENCES = [
   { value: "flat", label: "Flat Terrain" },
   { value: "hills", label: "Hills & Challenges" },
   { value: "scenic", label: "Scenic Views" },
-];
-
-const EXAMPLE_ROUTES = [
-  {
-    name: "Sunrise Park Loop",
-    start: "Central Park Entrance",
-    summary: "Begin at the Central Park South entrance and follow the main path counterclockwise. Pass by the picturesque lake, continue through the tree-lined Mall, and circle back via Bethesda Terrace. This route offers a perfect balance of shade and sun with minimal elevation changes.",
-    distance: 5.2,
-    time: "31 minutes",
-    tip: "Morning runs here are magical - try to catch the sunrise for extra inspiration!",
-  },
-  {
-    name: "Riverside Explorer",
-    start: "Harbor Bridge Lookout",
-    summary: "Start at Harbor Bridge and follow the river path eastward. You'll pass the Maritime Museum, continue through Riverside Gardens with its beautiful flower displays, and loop back via the pedestrian boardwalk. The route is mostly flat with excellent views of the water.",
-    distance: 8.1,
-    time: "49 minutes",
-    tip: "Bring a water bottle - the drinking fountains along this route are limited!",
-  },
-  {
-    name: "Hill Conqueror Challenge",
-    start: "Mountain View Park",
-    summary: "Begin at Mountain View Park entrance and take the Summit Trail uphill. The first 2km are challenging with steep inclines, but you'll be rewarded with panoramic city views at the top. The return route follows a gentler gradient through the forest section.",
-    distance: 6.4,
-    time: "38 minutes",
-    tip: "Take shorter strides on the uphill sections to conserve energy.",
-  },
 ];
 
 export interface RouteFormData {
@@ -73,19 +47,7 @@ export const RouteForm = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const calculateTime = (distance: number, pace: number): string => {
-    const totalMinutes = distance * pace;
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = Math.round(totalMinutes % 60);
-    
-    if (hours > 0) {
-      return `${hours} hr ${minutes} min`;
-    } else {
-      return `${minutes} min`;
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Form validation
@@ -107,26 +69,19 @@ export const RouteForm = () => {
       return;
     }
 
-    // Simulate loading
+    // Call API
     setIsLoading(true);
     toast.info("Generating your perfect route...");
     
-    // Simulate API call - In a real app, this would be an actual API call
-    setTimeout(() => {
-      // Pick a random example route and adapt it
-      const baseRoute = EXAMPLE_ROUTES[Math.floor(Math.random() * EXAMPLE_ROUTES.length)];
-      
-      // Adapt route to user inputs
-      const adjustedRoute: RouteResultData = {
-        ...baseRoute,
-        distance: parseFloat(formData.distance),
-        start: formData.location,
-        time: calculateTime(distance, pace)
-      };
-      
-      setRouteResult(adjustedRoute);
+    try {
+      const generatedRoute = await routeService.generateRoute(formData);
+      setRouteResult(generatedRoute);
+    } catch (error) {
+      toast.error("Failed to generate route. Please try again.");
+      console.error(error);
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   const handleReset = () => {
